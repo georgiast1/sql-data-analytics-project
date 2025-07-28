@@ -79,8 +79,4 @@ Files: `segmentation.sql`, `cumulative.sql`, etc.
 
 ---
 
-## Next Steps
 
-- Add Tableau dashboards under `/tableau`
-- Include documentation in `/docs/`
-- Create materialized views for performance optimization
