@@ -1,0 +1,55 @@
+--Calculate the total sales per month
+--2 WAYS ALMOST ALIKE NOT EXACTLY THE SAME RESULT
+
+SELECT 
+SUM(sales_amount) AS total_sales,
+MONTH(order_date) AS order_month,
+YEAR(order_date) AS order_year
+FROM gold.fact_sales
+WHERE order_date IS NOT NULL
+GROUP BY MONTH(order_date), YEAR(order_date)
+ORDER BY YEAR(order_date);
+
+SELECT 
+DATETRUNC(month,order_date) AS total_sales,
+SUM(sales_amount) AS total_amounts
+FROM gold.fact_sales
+WHERE order_date IS NOT NULL
+GROUP BY DATETRUNC(month,order_date)
+ORDER BY DATETRUNC(month,order_date) ;
+
+
+
+--And the running total sales over time
+SELECT 
+order_date,
+total_sales,
+SUM(total_sales) OVER( ORDER BY order_date) AS running_total_sales
+FROM
+(
+	SELECT 
+	DATETRUNC(month,order_date) AS order_date,
+	SUM(sales_amount) AS total_sales
+	FROM gold.fact_sales
+	WHERE order_date IS NOT NULL
+	GROUP BY DATETRUNC(month,order_date)
+)t 
+
+
+--moving average
+SELECT 
+order_date,
+total_sales,
+
+SUM(total_sales) OVER( ORDER BY order_date) AS running_total_sales,
+AVG(avg_price) OVER(ORDER BY order_date) AS moving_average_price
+FROM
+(
+	SELECT 
+	DATETRUNC(month,order_date) AS order_date,
+	SUM(sales_amount) AS total_sales,
+	AVG(price) AS avg_price
+	FROM gold.fact_sales
+	WHERE order_date IS NOT NULL
+	GROUP BY DATETRUNC(month,order_date)
+)t 
